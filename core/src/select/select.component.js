@@ -7,9 +7,13 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 var core_1 = require('@angular/core');
 var underscore_1 = require('underscore');
+var forms_1 = require('@angular/forms');
 var SelectComponent = (function () {
-    function SelectComponent() {
+    function SelectComponent(formBuilder) {
+        this.formBuilder = formBuilder;
         this.id = underscore_1._.uniqueId();
+        this.disabledSelect = false;
+        this.required = false;
         this.onChange = new core_1.EventEmitter();
         this.modelValueChange = new core_1.EventEmitter();
     }
@@ -18,16 +22,45 @@ var SelectComponent = (function () {
         this.modelValueChange.emit(newValue);
         this.onChange.emit(newValue);
     };
+    SelectComponent.prototype.ngAfterContentInit = function () {
+        var control = new forms_1.FormControl();
+        if (!this.formGroup) {
+            this.formGroup = this.formBuilder.group({});
+            this.formGroup.addControl('', control);
+            this.checkSelectIsDisabled('');
+        }
+        else if (this.name) {
+            this.formGroup.addControl(this.name, control);
+            this.setValidators();
+            this.checkSelectIsDisabled(this.name);
+        }
+    };
+    SelectComponent.prototype.getName = function () {
+        return this.name || '';
+    };
+    SelectComponent.prototype.checkSelectIsDisabled = function (controlName) {
+        if (this.disabledSelect) {
+            this.formGroup.controls[controlName].disable();
+        }
+        else {
+            this.formGroup.controls[controlName].enable();
+        }
+    };
+    SelectComponent.prototype.setValidators = function () {
+        if (this.required) {
+            this.formGroup.controls[this.name].setValidators(forms_1.Validators.required);
+        }
+    };
     SelectComponent.prototype.ngOnChanges = function (changes) {
         var _this = this;
         if (changes.options && changes.options.currentValue) {
             setTimeout(function () {
-                if (underscore_1._.isUndefined(_this.modelValue)) {
-                    $('#' + _this.id + ' option:first').attr('selected', 'selected');
-                    _this.change($('#' + _this.id + ' option:first').val());
+                if (_this.modelValue) {
+                    $('#' + _this.id).val(_this.modelValue).attr('selected', 'selected');
                 }
                 else {
-                    $('#' + _this.id).val(_this.modelValue).attr('selected', 'selected');
+                    $('#' + _this.id + ' option:first').attr('selected', 'selected');
+                    _this.change($('#' + _this.id + ' option:first').val());
                 }
             }, 0);
         }
@@ -39,11 +72,26 @@ var SelectComponent = (function () {
         core_1.Input('options')
     ], SelectComponent.prototype, "options");
     __decorate([
+        core_1.Input('optionValue')
+    ], SelectComponent.prototype, "optionValue");
+    __decorate([
         core_1.Input('key')
     ], SelectComponent.prototype, "key");
     __decorate([
         core_1.Input('disabledSelect')
     ], SelectComponent.prototype, "disabledSelect");
+    __decorate([
+        core_1.Input('showDefaultOption')
+    ], SelectComponent.prototype, "showDefaultOption");
+    __decorate([
+        core_1.Input('formGroup')
+    ], SelectComponent.prototype, "formGroup");
+    __decorate([
+        core_1.Input('name')
+    ], SelectComponent.prototype, "name");
+    __decorate([
+        core_1.Input('required')
+    ], SelectComponent.prototype, "required");
     __decorate([
         core_1.Output('onChange')
     ], SelectComponent.prototype, "onChange");
@@ -53,7 +101,7 @@ var SelectComponent = (function () {
     SelectComponent = __decorate([
         core_1.Component({
             selector: 'select-box',
-            template: "<select id=\"{{ id }}\" class=\"browser-default\" [(ngModel)]=\"modelValue\" (ngModelChange)=\"change($event)\" [disabled]=\"disabledSelect\">\n                <option *ngFor=\"let option of options\" [value]=\"option[key]\">{{ option.name }}</option>\n              </select>"
+            template: "<span [formGroup]=\"formGroup\">\n                <select id=\"{{ id }}\" [formControlName]=\"getName()\" name=\"{{name}}\" class=\"browser-default\" [(ngModel)]=\"modelValue\" (ngModelChange)=\"change($event)\">\n                    <option [value]=\"''\">Selecione</option>\n                    <option *ngFor=\"let option of options\" [value]=\"option[key]\">{{ option[optionValue.toString()] }}</option>\n                </select>\n            </span>"
         })
     ], SelectComponent);
     return SelectComponent;

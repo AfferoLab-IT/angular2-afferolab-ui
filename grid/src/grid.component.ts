@@ -118,7 +118,6 @@ export class GridComponent {
   public message: string;
 
   public status = [
-    {name: 'Todos', value: ''},
     {name: 'Ativo', value: true},
     {name: 'Inativo', value: false}
   ];

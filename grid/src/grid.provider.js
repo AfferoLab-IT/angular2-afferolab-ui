@@ -6,19 +6,21 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var http_1 = require('@angular/http');
 var util_1 = require('util');
+var underscore_1 = require('underscore');
 var GridProvider = (function () {
-    function GridProvider(serverApi, mapper, params, _headers, _hasEditPermissions, _hasRemovePermissions, _readOnly, _hasFilter) {
-        if (_hasEditPermissions === void 0) { _hasEditPermissions = true; }
-        if (_hasRemovePermissions === void 0) { _hasRemovePermissions = true; }
+    function GridProvider(serverApi, mapper, params, _headers, _readOnly, _hasFilter, _actionRemove, _actionEdit, _actionMultiSelect, _actionSingleSelect) {
+        if (_headers === void 0) { _headers = []; }
         if (_hasFilter === void 0) { _hasFilter = true; }
         this.serverApi = serverApi;
         this.mapper = mapper;
         this.params = params;
         this._headers = _headers;
-        this._hasEditPermissions = _hasEditPermissions;
-        this._hasRemovePermissions = _hasRemovePermissions;
         this._readOnly = _readOnly;
         this._hasFilter = _hasFilter;
+        this._actionRemove = _actionRemove;
+        this._actionEdit = _actionEdit;
+        this._actionMultiSelect = _actionMultiSelect;
+        this._actionSingleSelect = _actionSingleSelect;
         this._pagination = Pagination.empty;
         this._filter = new Filter();
         this._pageRequest = new PageRequest();
@@ -33,6 +35,34 @@ var GridProvider = (function () {
     Object.defineProperty(GridProvider.prototype, "filter", {
         get: function () {
             return this._filter;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GridProvider.prototype, "actionRemove", {
+        get: function () {
+            return this._actionRemove;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GridProvider.prototype, "actionEdit", {
+        get: function () {
+            return this._actionEdit;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GridProvider.prototype, "actionMultiSelect", {
+        get: function () {
+            return this._actionMultiSelect;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(GridProvider.prototype, "actionSingleSelect", {
+        get: function () {
+            return this._actionSingleSelect;
         },
         enumerable: true,
         configurable: true
@@ -61,20 +91,6 @@ var GridProvider = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(GridProvider.prototype, "hasEditPermissions", {
-        get: function () {
-            return this._hasEditPermissions;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(GridProvider.prototype, "hasRemovePermissions", {
-        get: function () {
-            return this._hasRemovePermissions;
-        },
-        enumerable: true,
-        configurable: true
-    });
     Object.defineProperty(GridProvider.prototype, "readOnly", {
         get: function () {
             return this._readOnly;
@@ -89,6 +105,30 @@ var GridProvider = (function () {
         enumerable: true,
         configurable: true
     });
+    GridProvider.prototype.setService = function (serverApi) {
+        this.serverApi = serverApi;
+    };
+    GridProvider.prototype.setHeaders = function (headers) {
+        this._headers = headers;
+    };
+    GridProvider.prototype.setMapper = function (mapper) {
+        this.mapper = mapper;
+    };
+    GridProvider.prototype.setActionRemove = function (hasPermission) {
+        this._actionRemove = new ActionRemove(hasPermission);
+    };
+    GridProvider.prototype.setActionEdit = function (hasPermission) {
+        this._actionEdit = new ActionEdit(hasPermission);
+    };
+    GridProvider.prototype.setActionMultiSelect = function (hasPermission, selectedItems) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        if (selectedItems === void 0) { selectedItems = []; }
+        this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems);
+    };
+    GridProvider.prototype.setActionSingleSelect = function (hasPermission, selectedItem, callback) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        this._actionSingleSelect = new ActionSingleSelect(hasPermission, selectedItem, callback);
+    };
     GridProvider.prototype.getData = function (page) {
         if (page === void 0) { page = -1; }
         if (page === -1) {
@@ -99,13 +139,12 @@ var GridProvider = (function () {
     };
     GridProvider.prototype.loadPageData = function (pageRequest) {
         var _this = this;
+        this.params = new http_1.URLSearchParams();
         this.params.setAll(this._filter.buildParams());
         this.params.setAll(pageRequest.buildParams());
         return this.serverApi.list(this.params).map(function (data) {
             _this._pagination = new Pagination(data.numberOfElements, data.totalPages, data.totalElements, pageRequest.page);
-            return data.content.map(function (model) {
-                return _this.mapper(model);
-            });
+            return data.content;
         });
     };
     GridProvider.prototype.remove = function (id) {
@@ -141,12 +180,25 @@ var GridProviderBuilder = (function () {
         this._headers = headers;
         return this;
     };
-    GridProviderBuilder.prototype.hasEditPermissions = function (editPermissions) {
-        this._hasEditPermissions = editPermissions;
+    GridProviderBuilder.prototype.actionRemove = function (hasPermission) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        this._actionRemove = new ActionRemove(hasPermission);
         return this;
     };
-    GridProviderBuilder.prototype.hasRemovePermissions = function (removePermissions) {
-        this._hasRemovePermissions = removePermissions;
+    GridProviderBuilder.prototype.actionEdit = function (hasPermission) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        this._actionEdit = new ActionEdit(hasPermission);
+        return this;
+    };
+    GridProviderBuilder.prototype.actionMultiSelect = function (hasPermission, selectedItems) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        if (selectedItems === void 0) { selectedItems = []; }
+        this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems);
+        return this;
+    };
+    GridProviderBuilder.prototype.actionSingleSelect = function (hasPermission, selectedItem, callback) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        this._actionSingleSelect = new ActionSingleSelect(hasPermission, selectedItem, callback);
         return this;
     };
     GridProviderBuilder.prototype.readOnly = function () {
@@ -159,7 +211,11 @@ var GridProviderBuilder = (function () {
     };
     GridProviderBuilder.prototype.build = function () {
         var params = this._params || new PageRequest().buildParams();
-        return new GridProvider(this._service, this._mapper, params, this._headers, this._hasEditPermissions, this._hasRemovePermissions, this._readOnly, this._hasFilter);
+        var actionEdit = this._actionEdit || new ActionEdit();
+        var actionRemove = this._actionRemove || new ActionRemove();
+        var actionMultiSelect = this._actionMultiSelect || new ActionMultiSelect();
+        var actionSingleSelect = this._actionSingleSelect || new ActionSingleSelect();
+        return new GridProvider(this._service, this._mapper, params, this._headers, this._readOnly, this._hasFilter, actionRemove, actionEdit, actionMultiSelect, actionSingleSelect);
     };
     return GridProviderBuilder;
 }());
@@ -214,7 +270,12 @@ var Filter = (function (_super) {
     __extends(Filter, _super);
     function Filter(status, q) {
         _super.call(this);
-        this.status = status;
+        if (status) {
+            this.status = status;
+        }
+        else {
+            this.status = '';
+        }
         this.q = q;
     }
     return Filter;
@@ -230,4 +291,68 @@ var PageRequest = (function (_super) {
     }
     return PageRequest;
 }(Params));
+var AbstractAction = (function () {
+    function AbstractAction(hasPermission) {
+        this.hasPermission = hasPermission;
+    }
+    AbstractAction.prototype.canShow = function () {
+        return this.hasPermission;
+    };
+    return AbstractAction;
+}());
+var ActionRemove = (function (_super) {
+    __extends(ActionRemove, _super);
+    function ActionRemove(hasPermission) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        _super.call(this, hasPermission);
+    }
+    return ActionRemove;
+}(AbstractAction));
+var ActionEdit = (function (_super) {
+    __extends(ActionEdit, _super);
+    function ActionEdit(hasPermission) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        _super.call(this, hasPermission);
+    }
+    return ActionEdit;
+}(AbstractAction));
+var ActionMultiSelect = (function (_super) {
+    __extends(ActionMultiSelect, _super);
+    function ActionMultiSelect(hasPermission, selectedItems) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        if (selectedItems === void 0) { selectedItems = []; }
+        _super.call(this, hasPermission);
+        this.selectedItems = [];
+        this.selectedItems = selectedItems;
+    }
+    ActionMultiSelect.prototype.addItem = function (item) {
+        this.selectedItems.push(item);
+    };
+    ActionMultiSelect.prototype.removeItem = function (item) {
+        var indexToRemove = underscore_1._.findIndex(this.selectedItems, function (selectedItem) {
+            return selectedItem.id == item.id;
+        });
+        this.selectedItems.splice(indexToRemove, 1);
+    };
+    return ActionMultiSelect;
+}(AbstractAction));
+var ActionSingleSelect = (function (_super) {
+    __extends(ActionSingleSelect, _super);
+    function ActionSingleSelect(hasPermission, selectedItem, callback) {
+        if (hasPermission === void 0) { hasPermission = false; }
+        _super.call(this, hasPermission);
+        this.selectedItem = selectedItem;
+        this.callback = callback;
+    }
+    ActionSingleSelect.prototype.addItem = function (item) {
+        Object.assign(this.selectedItem, item);
+        if (this.callback) {
+            this.callback(this.selectedItem);
+        }
+    };
+    ActionSingleSelect.prototype.removeItem = function () {
+        delete this.selectedItem;
+    };
+    return ActionSingleSelect;
+}(AbstractAction));
 //# sourceMappingURL=grid.provider.js.map

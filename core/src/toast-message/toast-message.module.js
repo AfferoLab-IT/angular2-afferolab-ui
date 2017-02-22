@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require('@angular/core');
-var toast_message_component_1 = require('./toast-message.component.ts');
+var toast_message_component_1 = require('./toast-message.component');
 var ToastMessageModule = (function () {
     function ToastMessageModule() {
     }

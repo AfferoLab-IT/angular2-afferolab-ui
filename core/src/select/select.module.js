@@ -8,7 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var core_1 = require('@angular/core');
 var forms_1 = require('@angular/forms');
 var platform_browser_1 = require('@angular/platform-browser');
-var select_component_1 = require('./select.component.ts');
+var select_component_1 = require('./select.component');
 var SelectModule = (function () {
     function SelectModule() {
     }

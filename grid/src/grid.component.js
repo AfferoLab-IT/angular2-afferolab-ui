@@ -17,6 +17,7 @@ var GridComponent = (function () {
             { name: 'Ativo', value: true },
             { name: 'Inativo', value: false }
         ];
+        this.singleSelectItem = new core_1.EventEmitter();
         this.list = [];
         this.loaded = false;
         this.modalMessage.title = 'Remoção';
@@ -26,7 +27,7 @@ var GridComponent = (function () {
         get: function () {
             var _this = this;
             /*@todo criar classe para Lazy load que carregue apenas uma vez o conteudo.*/
-            if (!this.loaded) {
+            if (!this.loaded && (this.loadOnStart == undefined || this.loadOnStart)) {
                 this.loaded = true;
                 this.loadData(function () {
                     return _this.provider.getData(0);
@@ -47,7 +48,7 @@ var GridComponent = (function () {
         var _this = this;
         this.showLoad = true;
         this.provider.remove(id).subscribe(function () {
-            _this.loadData(function () { return _this.provider.getData(); });
+            _this.loadData(function () { return _this.provider.getData(_this.getPageAfterRemoveLastRegister()); });
             _this.showLoad = false;
         }, function () {
             _this.message = 'Erro ao remover registro.';
@@ -56,10 +57,18 @@ var GridComponent = (function () {
     };
     GridComponent.prototype.search = function () {
         var _this = this;
+        this.buildSearchFilters();
         this.loadData(function () { return _this.provider.getData(0); });
     };
     GridComponent.prototype.loadElements = function () {
         setTimeout(function () { return $('.modal-trigger').leanModal(); }, 0);
+    };
+    GridComponent.prototype.getPageAfterRemoveLastRegister = function () {
+        var page = -1;
+        if (this.list.length == 1) {
+            page = this.provider.pagination.currentPage - 1;
+        }
+        return page;
     };
     GridComponent.prototype.loadData = function (dataLoader) {
         var _this = this;
@@ -69,13 +78,16 @@ var GridComponent = (function () {
         function (data) {
             _this.list.length = 0;
             data.forEach(function (values) {
-                var item = { id: any, columns: [] };
-                for (var key in values) {
+                var item = values;
+                item.columns = [];
+                var mapperValues = _this.provider.mapper(values);
+                for (var key in mapperValues) {
                     if (key === '_id') {
-                        item.id = values[key];
+                        item.id = mapperValues[key];
                     }
                     else {
-                        item.columns.push(values[key]);
+                        item[_this.buildKey(key)] = mapperValues[key];
+                        item.columns.push(mapperValues[key]);
                     }
                 }
                 _this.list.push(item);
@@ -99,16 +111,70 @@ var GridComponent = (function () {
             this.search();
         }
     };
+    GridComponent.prototype.updateList = function (event, item) {
+        if (event.currentTarget.checked) {
+            this.provider.actionMultiSelect.addItem(item);
+        }
+        else {
+            this.provider.actionMultiSelect.removeItem(item);
+        }
+    };
+    GridComponent.prototype.updateItem = function (item) {
+        this.provider.actionSingleSelect.addItem(item);
+        this.singleSelectItem.emit();
+    };
+    GridComponent.prototype.buildKey = function (key) {
+        return key.substring(key.indexOf('.') + 1, key.length);
+    };
+    GridComponent.prototype.buildSearchFilters = function () {
+        this.cleanFilters();
+        if (this.filters) {
+            for (var key in this.filters) {
+                if (this.filters[key] !== 'null') {
+                    this.provider.filter[key] = this.filters[key];
+                }
+            }
+        }
+    };
+    GridComponent.prototype.cleanFilters = function () {
+        for (var key in this.filters) {
+            delete this.provider._filter[key];
+        }
+    };
     __decorate([
         core_1.Input('provider')
     ], GridComponent.prototype, "provider");
+    __decorate([
+        core_1.Output('singleSelectItem')
+    ], GridComponent.prototype, "singleSelectItem");
+    __decorate([
+        core_1.Input('loadOnStart')
+    ], GridComponent.prototype, "loadOnStart");
+    __decorate([
+        core_1.Input('filters')
+    ], GridComponent.prototype, "filters");
+    __decorate([
+        core_1.Input('statusClass')
+    ], GridComponent.prototype, "statusClass");
+    __decorate([
+        core_1.Input('inputSearchClass')
+    ], GridComponent.prototype, "inputSearchClass");
+    __decorate([
+        core_1.Input('buttonSearchClass')
+    ], GridComponent.prototype, "buttonSearchClass");
+    __decorate([
+        core_1.Input('buttonSearchStyle')
+    ], GridComponent.prototype, "buttonSearchStyle");
+    __decorate([
+        core_1.Input('registerStyle')
+    ], GridComponent.prototype, "registerStyle");
     __decorate([
         core_1.HostListener('document:keypress', ['$event'])
     ], GridComponent.prototype, "keypress");
     GridComponent = __decorate([
         core_1.Component({
             selector: 'grid',
-            template: "\n            <loader [showLoad]=\"showLoad\"></loader>\n            <toast-message [message]=\"message\"></toast-message>\n            <div *ngIf=\"provider.hasFilter\" class=\"card-panel\">\n              <div class=\"row\">\n                <div class=\"col s12 m12 l2\">\n                <select-box [options]=\"status\" [key]=\"'value'\" [(modelValue)]=\"provider.filter.status\" ></select-box>\n                </div>\n                <div class=\"col s12 m12 l5\">\n                  <input class=\"\" placeholder=\"Pesquisar...\" aria-controls=\"example\" type=\"search\" [(ngModel)]=\"provider.filter.q\">\n                </div>\n                <div>\n                  <a (click)=\"search()\" class=\"btn-floating btn-sm waves-effect waves-light red\">\n                    <i class=\"material-icons\">search</i>\n                  </a>\n                </div>\n              </div>\n            </div>\n\n            <div id=\"example_wrapper\" class=\"dataTables_wrapper\">\n              <table id=\"{{ id }}\" class=\"display responsive-table datatable-example striped\">\n                <thead>\n                  <tr>\n                    <th *ngFor=\"let head of provider.headers\">{{ head }}</th>\n                    <th width=\"15%\" *ngIf=\"!provider.readOnly\">A\u00E7\u00F5es</th>\n                  </tr>\n                </thead>\n                <tbody>\n                  <tr *ngFor=\"let item of items\">\n                    <td *ngFor=\"let value of item.columns\">\n                        <!-- TODO: REFATORAR -->\n                        <a *ngIf=\"value != null && value.toString().indexOf('http') > -1\" href=\"{{ value }}\" target=\"_blank\" >VISUALIZAR</a>\n                        <span *ngIf=\"value != null && value.toString().indexOf('http') === -1\">{{ value }}</span>\n                    </td>\n                     <td *ngIf=\"!provider.readOnly\">\n                        <a *ngIf=\"provider.hasEditPermissions\" [routerLink]=\"[provider.path, item.id]\"><i class=\"material-icons action-button\">mode_edit</i></a>\n                        <confirm-button *ngIf=\"provider.hasRemovePermissions\" (onConfirm)=\"remove($event)\"\n                                        [title]=\"modalMessage.title\"\n                                        [content]=\"modalMessage.content\"\n                                        [data]=\"item.id\">\n                            <i class=\"material-icons action-button\">delete</i>\n                        </confirm-button>\n                    </td>\n                  </tr>\n                  <tr *ngIf=\"items && items.length == 0\">\n                    <td [attr.colspan]=\"provider.headers.length+1\">\n                      <b>Nenhum registro encontrado!</b>\n                    </td>\n                  </tr>\n                </tbody>\n              </table>\n            \n              <div class=\"card-panel\">\n                <div class=\"row\">\n                  <div class=\"col s12 m12 l1\" id=\"register\">\n                    <label>Mostrar</label>\n                    <select name=\"register\" class=\"browser-default\" [(ngModel)]=\"provider.pageRequest.size\" (ngModelChange)=\"getPage(0)\">\n                      <option value=\"5\">5</option>\n                      <option value=\"10\">10</option>\n                      <option value=\"25\">25</option>\n                    </select>\n                  </div>\n                </div>\n                <div class=\"row\">\n                  <div class=\"dataTables_info left-align col s12 m12 l8\" style=\"margin-top: 10px\" id=\"example_info\" role=\"status\" aria-live=\"polite\">Mostrando 1 at\u00E9 {{ provider.pagination.totalElements }} de {{ provider.pagination.totalRegisters }} registros</div>\n                  <div class=\"dataTables_paginate paging_simple_numbers right-align col s12 m12 l4\" id=\"example_paginate\">\n                    <button *ngIf=\"provider.pagination.canShowPrevious(provider.pagination.currentPage)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" id=\"example_previous\" (click)=\"getPage(provider.pagination.previousPage())\">\n                        <i class=\"material-icons\">chevron_left</i>\n                    </button>\n  \n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -3)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -3)\">{{provider.pagination.currentPage -2}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -2)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -2)\">{{provider.pagination.currentPage -1}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -1)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -1)\">{{provider.pagination.currentPage}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage)\" class=\"paginate_button current\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage)\">{{provider.pagination.currentPage +1}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +2)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +1)\">{{provider.pagination.currentPage +2}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +3)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +2)\">{{provider.pagination.currentPage +3}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +4)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +3)\">{{provider.pagination.currentPage +4}}</button>\n  \n                    <button *ngIf=\"provider.pagination.canShowNext(provider.pagination.currentPage +4)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" id=\"example_next\" (click)=\"getPage(provider.pagination.nextPage())\">\n                        <i class=\"material-icons\">chevron_right</i>\n                    </button>\n                  </div>\n                </div>\n              </div>\n            </div>\n            "
+            template: "\n            <loader [showLoad]=\"showLoad\"></loader>\n            <toast-message [message]=\"message\"></toast-message>\n            <div class=\"card-panel\">\n              <ng-content></ng-content>\n              <div *ngIf=\"!provider.hasFilter && filters\" ngClass=\"{{buttonSearchClass}}\">\n                  <a (click)=\"search()\" class=\"btn-floating btn-sm button-confirm-color\" [ngStyle]=\"buttonSearchStyle\">\n                    <i class=\"material-icons\">search</i>\n                  </a>\n                </div>\n              <div class=\"row\">\n                <div *ngIf=\"provider.hasFilter\" ngClass=\"{{statusClass ? statusClass : 'col s12 m12 l2'}}\">\n                <select-box [options]=\"status\" [key]=\"'value'\" [optionValue]=\"'name'\" [(modelValue)]=\"provider.filter.status\" ></select-box>\n                </div>\n                <div *ngIf=\"provider.hasFilter\" ngClass=\"{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}\">\n                  <input class=\"\" placeholder=\"Pesquisar...\" aria-controls=\"example\" type=\"search\" [(ngModel)]=\"provider.filter.q\">\n                </div>\n                <div *ngIf=\"provider.hasFilter\" ngClass=\"{{buttonSearchClass}}\">\n                  <a (click)=\"search()\" class=\"btn-floating btn-sm button-confirm-color\">\n                    <i class=\"material-icons\">search</i>\n                  </a>\n                </div>\n               </div>\n              </div>\n\n            <div id=\"example_wrapper\" class=\"dataTables_wrapper\">\n              <table id=\"{{ id }}\" class=\"display responsive-table datatable-example striped\">\n                <thead>\n                  <tr>\n                    <th *ngFor=\"let head of provider.headers\">{{ head }}</th>\n                    <th width=\"15%\" *ngIf=\"!provider.readOnly\">A\u00E7\u00F5es</th>\n                  </tr>\n                </thead>\n                <tbody>\n                  <tr *ngFor=\"let item of items\">\n                    <td *ngFor=\"let value of item.columns\">                                               \n                        <div style=\"max-width: 600px; word-wrap: break-word\">{{ value }}</div>     \n                    </td>\n                     <td *ngIf=\"!provider.readOnly\">\n                        <a *ngIf=\"provider.actionEdit && provider.actionEdit.canShow()\" [routerLink]=\"[provider.path, item.id]\"><i class=\"material-icons action-button\">mode_edit</i></a>\n                        <confirm-button *ngIf=\"provider.actionRemove && provider.actionRemove.canShow()\" (onConfirm)=\"remove($event)\"\n                                        [title]=\"modalMessage.title\"\n                                        [content]=\"modalMessage.content\"\n                                        [data]=\"item.id\">\n                            <i class=\"material-icons action-button\">delete</i>\n                        </confirm-button>\n                        <span *ngIf=\"provider.actionMultiSelect && provider.actionMultiSelect.canShow()\" >\n                          <input id=\"multi_select_{{item.id}}\" type=\"checkbox\" [(ngModel)]=\"item.checked\" (change)=\"updateList($event, item)\">\n                          <label htmlFor=\"multi_select_{{item.id}}\"></label>\n                        </span>\n                        <span *ngIf=\"provider.actionSingleSelect && provider.actionSingleSelect.canShow()\" >\n                          <a class=\"btn-sm btn-floating button-confirm-color\" (click)=\"updateItem(item)\">\n                            <i class=\"material-icons dp48\">add</i>\n                          </a>\n                        </span>\n                    </td>\n                  </tr>\n                  <tr *ngIf=\"items && items.length == 0\">\n                    <td [attr.colspan]=\"provider.headers.length+1\">\n                      <b>Nenhum registro encontrado!</b>\n                    </td>\n                  </tr>\n                </tbody>\n              </table>\n            \n              <div class=\"card-panel\">\n                <div class=\"row\">\n                  <div class=\"col s12 m12 l1\" [ngStyle]=\"registerStyle\" id=\"register\">\n                    <label>Mostrar</label>\n                    <select name=\"register\" class=\"browser-default\" [(ngModel)]=\"provider.pageRequest.size\" (ngModelChange)=\"getPage(0)\">\n                      <option value=\"5\">5</option>\n                      <option value=\"10\">10</option>\n                      <option value=\"25\">25</option>\n                    </select>\n                  </div>\n                </div>\n                <div class=\"row\">\n                  <div class=\"dataTables_info left-align col s12 m12 l8\" style=\"margin-top: 10px\" id=\"example_info\" role=\"status\" aria-live=\"polite\">Mostrando 1 at\u00E9 {{ provider.pagination.totalElements }} de {{ provider.pagination.totalRegisters }} registros</div>\n                  <div class=\"dataTables_paginate paging_simple_numbers right-align col s12 m12 l4\" id=\"example_paginate\">\n                    <button *ngIf=\"provider.pagination.canShowPrevious(provider.pagination.currentPage)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" id=\"example_previous\" (click)=\"getPage(provider.pagination.previousPage())\">\n                        <i class=\"material-icons\">chevron_left</i>\n                    </button>\n  \n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -3)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -3)\">{{provider.pagination.currentPage -2}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -2)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -2)\">{{provider.pagination.currentPage -1}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage -1)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage -1)\">{{provider.pagination.currentPage}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage)\" class=\"paginate_button current\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage)\">{{provider.pagination.currentPage +1}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +2)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +1)\">{{provider.pagination.currentPage +2}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +3)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +2)\">{{provider.pagination.currentPage +3}}</button>\n                    <button *ngIf=\"provider.pagination.canShowPage(provider.pagination.currentPage +4)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" (click)=\"getPage(provider.pagination.currentPage +3)\">{{provider.pagination.currentPage +4}}</button>\n  \n                    <button *ngIf=\"provider.pagination.canShowNext(provider.pagination.currentPage +4)\" class=\"paginate_button\" aria-controls=\"example\" tabindex=\"0\" id=\"example_next\" (click)=\"getPage(provider.pagination.nextPage())\">\n                        <i class=\"material-icons\">chevron_right</i>\n                    </button>\n                  </div>\n                </div>\n              </div>\n            </div>\n            "
         })
     ], GridComponent);
     return GridComponent;

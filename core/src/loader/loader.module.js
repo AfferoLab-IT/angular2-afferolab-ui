@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 var core_1 = require('@angular/core');
-var loader_component_1 = require('./loader.component.ts');
+var loader_component_1 = require('./loader.component');
 var LoaderModule = (function () {
     function LoaderModule() {
     }

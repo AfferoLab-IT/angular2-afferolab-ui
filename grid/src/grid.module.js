@@ -9,11 +9,11 @@ var core_1 = require('@angular/core');
 var platform_browser_1 = require('@angular/platform-browser');
 var router_1 = require('@angular/router');
 var forms_1 = require('@angular/forms');
-var modal_module_1 = require('.././src/modal.module');
-var select_module_1 = require('../../core/src/select/select.module.ts');
-var loader_module_1 = require('../../core/src/loader/loader.module.ts');
-var toast_message_module_1 = require('../../core/src/toast-message/toast-message.module.ts');
-var grid_component_1 = require('./grid.component.ts');
+var modal_module_1 = require('../../modal/src/modal.module');
+var select_module_1 = require('../../core/src/select/select.module');
+var loader_module_1 = require('../../core/src/loader/loader.module');
+var toast_message_module_1 = require('../../core/src/toast-message/toast-message.module');
+var grid_component_1 = require('./grid.component');
 var GridModule = (function () {
     function GridModule() {
     }

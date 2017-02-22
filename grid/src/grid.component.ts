@@ -17,7 +17,7 @@ import { GridProvider } from './grid.provider';
                 </div>
               <div class="row">
                 <div *ngIf="provider.hasFilter" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
-                <select-box [options]="status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
+                <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
                 </div>
                 <div *ngIf="provider.hasFilter" ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
                   <input class="" placeholder="Pesquisar..." aria-controls="example" type="search" [(ngModel)]="provider.filter.q">
@@ -122,6 +122,10 @@ export class GridComponent {
     {name: 'Inativo', value: false}
   ];
 
+  public activeStatus = [
+    {name: 'Ativo', value: true}
+  ];
+
   @Input('provider')
   provider: GridProvider<any>;
 
@@ -131,6 +135,8 @@ export class GridComponent {
   @Input('loadOnStart') loadOnStart;
 
   @Input('filters') filters;
+
+  @Input('onlyActive') onlyActive;
 
   @Input('statusClass') statusClass;
 

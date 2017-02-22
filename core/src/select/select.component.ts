@@ -6,7 +6,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
   selector: 'select-box',
   template: `<span [formGroup]="formGroup">
                 <select id="{{ id }}" [formControlName]="getName()" name="{{name}}" class="browser-default" [(ngModel)]="modelValue" (ngModelChange)="change($event)">
-                    <option [value]="''">Selecione</option>
+                    <option *ngIf="!onlyActive" [value]="''">Selecione</option>
                     <option *ngFor="let option of options" [value]="option[key]">{{ option[optionValue.toString()] }}</option>
                 </select>
             </span>`
@@ -26,6 +26,9 @@ export class SelectComponent implements OnChanges, OnInit, AfterContentInit {
 
   @Input('key')
   key: any;
+
+  @Input('onlyActive')
+  onlyActive: boolean;
 
   @Input('disabledSelect')
   disabledSelect: boolean = false;

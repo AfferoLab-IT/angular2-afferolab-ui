@@ -124,10 +124,14 @@ export class GridProvider<MODEL> {
     this.params.setAll(this._filter.buildParams());
     this.params.setAll(pageRequest.buildParams());
 
-    return this.serverApi.list(this.params).map(data=> {
-      this._pagination = new Pagination(data.numberOfElements, data.totalPages, data.totalElements, pageRequest.page);
-      return data.content;
-    });
+    if (this.serverApi) {
+      return this.serverApi.list(this.params).map(data=> {
+        this._pagination = new Pagination(data.numberOfElements, data.totalPages, data.totalElements, pageRequest.page);
+        return data.content;
+      });
+    } else {
+      return Observable.of([]);
+    }
   }
 
   remove(id:number): Observable<boolean>  {

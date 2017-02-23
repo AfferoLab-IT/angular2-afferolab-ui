@@ -15,7 +15,7 @@ import { _ } from 'underscore';
                 <div class="modal-footer" >
                     <a *ngIf="showConfirm" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel || 'Não' }}</a>
                     <a *ngIf="showConfirm" (click)= "confirm()" class=" modal-action modal-close waves-effect waves-green btn-flat">{{ confirmLabel || 'Sim' }} </a>
-                    <a *ngIf="!showConfirm" class=" modal-action modal-close waves-effect waves-green btn-flat">{{closeLabel || 'Fechar' }}</a>
+                    <a *ngIf="!showConfirm" (click)="closeModal(id)" class=" modal-action modal-close waves-effect waves-green btn-flat">{{closeLabel || 'Fechar' }}</a>
                 </div>
               </div>`
 })
@@ -81,5 +81,9 @@ export class ModalMessageComponent {
     } else {
       $('#' + this.id).openModal();
     }
+  }
+
+  closeModal(id: any): void {
+    $('#' + this.id).closeModal();
   }
 }

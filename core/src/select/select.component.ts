@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, AfterContentInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, AfterContentInit, OnInit } from '@angular/core';
 import { _ } from 'underscore';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -11,7 +11,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
                 </select>
             </span>`
 })
-export class SelectComponent implements OnChanges, AfterContentInit {
+export class SelectComponent implements OnChanges, OnInit {
 
   public id: string = _.uniqueId();
 
@@ -59,7 +59,7 @@ export class SelectComponent implements OnChanges, AfterContentInit {
     this.onChange.emit(newValue);
   }
 
-  ngAfterContentInit() {
+  ngOnInit() {
     let control = new FormControl();
 
     if (!this.formGroup) {
@@ -93,7 +93,9 @@ export class SelectComponent implements OnChanges, AfterContentInit {
   }
 
   ngOnChanges(changes: any): void {
+
     setTimeout(() => {
+
       if (this.modelValue) {
         $('#' + this.id).val(this.modelValue);
       } else {

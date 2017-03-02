@@ -49,7 +49,7 @@ import { GridProvider } from './grid.provider';
                                         [title]="modalMessage.title"
                                         [content]="modalMessage.content"
                                         [checkToDelete]="provider"
-                                        [data]="item.id">
+                                        [data]="item">
                             <i class="material-icons action-button">delete</i>
                         </confirm-button>
                         <span *ngIf="provider.actionMultiSelect && provider.actionMultiSelect.canShow()" >

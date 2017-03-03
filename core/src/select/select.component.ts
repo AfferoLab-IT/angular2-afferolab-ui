@@ -99,8 +99,13 @@ export class SelectComponent implements OnChanges, OnInit {
       if (this.modelValue) {
         $('#' + this.id).val(this.modelValue);
       } else {
-        $('#' + this.id).val('');
-        this.change('');
+        if (this.onlyActive) {
+          $('#' + this.id).find('option:first').attr('selected','selected');
+          this.change($('#' + this.id).val());
+        } else {
+          $('#' + this.id).val('');
+          this.change('');
+        }
       }
     }, 0);
   }

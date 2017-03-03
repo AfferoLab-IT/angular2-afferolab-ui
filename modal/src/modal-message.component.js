@@ -15,10 +15,10 @@ var ModalMessageComponent = (function () {
         this.onDeny = new core_1.EventEmitter();
     }
     ModalMessageComponent.prototype.confirm = function () {
-        this.onConfirm.emit(this.data);
+        this.onConfirm.emit(this.data.id);
     };
     ModalMessageComponent.prototype.deny = function () {
-        this.onDeny.emit(this.data);
+        this.onDeny.emit(this.data.id);
     };
     ModalMessageComponent.prototype.openModal = function () {
         var _this = this;
@@ -35,6 +35,9 @@ var ModalMessageComponent = (function () {
         else {
             $('#' + this.id).openModal();
         }
+    };
+    ModalMessageComponent.prototype.closeModal = function (id) {
+        $('#' + this.id).closeModal();
     };
     __decorate([
         core_1.Input('data')
@@ -72,7 +75,7 @@ var ModalMessageComponent = (function () {
     ModalMessageComponent = __decorate([
         core_1.Component({
             selector: 'confirm-button',
-            template: "\n              <span class=\"{{class}}\" (click)=\"openModal()\" style=\"cursor: pointer\">\n                <ng-content></ng-content>\n              </span>\n              <div id=\"{{ id }}\" class=\"modal\">\n                <div class=\"modal-content left-align\">\n                    <h4>{{ title || 'Alerta' }}</h4>\n                    <p>{{ content || 'Deseja confirmar essa a\u00E7\u00E3o?' }}</p>\n                </div>\n                <div class=\"modal-footer\" >\n                    <a *ngIf=\"showConfirm\" (click)= \"deny()\" class=\" modal-action modal-close waves-effect waves-red btn-flat\">{{ denyLabel || 'N\u00E3o' }}</a>\n                    <a *ngIf=\"showConfirm\" (click)= \"confirm()\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">{{ confirmLabel || 'Sim' }} </a>\n                    <a *ngIf=\"!showConfirm\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">{{closeLabel || 'Fechar' }}</a>\n                </div>\n              </div>"
+            template: "\n              <span class=\"{{class}}\" (click)=\"openModal()\" style=\"cursor: pointer\">\n                <ng-content></ng-content>\n              </span>\n              <div id=\"{{ id }}\" class=\"modal\">\n                <div class=\"modal-content left-align\">\n                    <h4>{{ title || 'Alerta' }}</h4>\n                    <p>{{ content || 'Deseja confirmar essa a\u00E7\u00E3o?' }}</p>\n                </div>\n                <div class=\"modal-footer\" >\n                    <a *ngIf=\"showConfirm\" (click)= \"deny()\" class=\" modal-action modal-close waves-effect waves-red btn-flat\">{{ denyLabel || 'N\u00E3o' }}</a>\n                    <a *ngIf=\"showConfirm\" (click)= \"confirm()\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">{{ confirmLabel || 'Sim' }} </a>\n                    <a *ngIf=\"!showConfirm\" (click)=\"closeModal(id)\" class=\" modal-action modal-close waves-effect waves-green btn-flat\">{{closeLabel || 'Fechar' }}</a>\n                </div>\n              </div>"
         })
     ], ModalMessageComponent);
     return ModalMessageComponent;

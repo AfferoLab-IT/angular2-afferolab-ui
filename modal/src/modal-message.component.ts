@@ -57,11 +57,11 @@ export class ModalMessageComponent {
   onDeny: EventEmitter<any> = new EventEmitter<any>();
 
   confirm(): void {
-    this.onConfirm.emit(this.data);
+    this.onConfirm.emit(this.data.id);
   }
 
   deny(): void {
-    this.onDeny.emit(this.data);
+    this.onDeny.emit(this.data.id);
   }
 
   openModal(): void {

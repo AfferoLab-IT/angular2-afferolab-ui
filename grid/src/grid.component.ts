@@ -214,6 +214,7 @@ export class GridComponent {
         data => {
           this.list.length=0;
           data.forEach(values =>  {
+            this.setCheckedInSelectedItem(values);
             let item = values;
             item.columns = [];
 
@@ -282,6 +283,16 @@ export class GridComponent {
   cleanFilters() {
     for (var key in this.filters) {
       delete this.provider._filter[key];
+    }
+  }
+
+  setCheckedInSelectedItem(item) {
+    if (this.provider.actionMultiSelect
+        && this.provider.actionMultiSelect.selectedItems.length > 0
+        && _.find(this.provider.actionMultiSelect.selectedItems, function (selectedItem) {
+          return selectedItem.id === item.id;
+        }) != undefined) {
+      item.checked = true;
     }
   }
 }

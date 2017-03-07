@@ -9,20 +9,22 @@ import { GridProvider } from './grid.provider';
             <loader [showLoad]="showLoad"></loader>
             <toast-message [message]="message"></toast-message>
             <div class="card-panel">
+            <div class="row">
               <ng-content></ng-content>
+              </div>
               <div *ngIf="!provider.hasFilter && filters" ngClass="{{buttonSearchClass}}">
                   <a (click)="search()" class="btn-floating btn-sm button-confirm-color" [ngStyle]="buttonSearchStyle">
                     <i class="material-icons">search</i>
                   </a>
+              </div>
+              <div class="row" *ngIf="provider.hasFilter">
+                <div ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
+                    <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
                 </div>
-              <div class="row">
-                <div *ngIf="provider.hasFilter" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
-                <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
-                </div>
-                <div *ngIf="provider.hasFilter" ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
+                <div ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
                   <input class="" placeholder="Pesquisar..." aria-controls="example" type="search" [(ngModel)]="provider.filter.q">
                 </div>
-                <div *ngIf="provider.hasFilter" ngClass="{{buttonSearchClass}}">
+                <div ngClass="{{buttonSearchClass}}">
                   <a (click)="search()" class="btn-floating btn-sm button-confirm-color">
                     <i class="material-icons">search</i>
                   </a>

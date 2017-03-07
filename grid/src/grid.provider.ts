@@ -22,6 +22,7 @@ export class GridProvider<MODEL> {
               protected _hasFilter: boolean = true,
               protected _actionRemove: Action,
               protected _actionEdit: Action,
+              protected _actionView: Action,
               protected _actionMultiSelect: Action,
               protected _actionSingleSelect: Action,
               protected _actionCheckToDelete: Action) {}
@@ -40,6 +41,10 @@ export class GridProvider<MODEL> {
 
   get actionEdit() {
     return this._actionEdit;
+  }
+
+  get actionView() {
+    return this._actionView;
   }
 
   get actionCheckToDelete() {
@@ -157,6 +162,8 @@ class GridProviderBuilder {
 
   private _actionEdit: Action;
 
+  private _actionView: Action;
+
   private _actionMultiSelect: Action;
 
   private _actionSingleSelect: Action;
@@ -204,6 +211,11 @@ class GridProviderBuilder {
     return this;
   }
 
+  actionView(hasPermission: boolean = false): GridProviderBuilder {
+    this._actionView = new ActionView(hasPermission);
+    return this;
+  }
+
   actionMultiSelect(hasPermission: boolean = false, selectedItems: Array<any> = [], identificator: any = 'id'): GridProviderBuilder {
     this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems, identificator);
     return this;
@@ -232,12 +244,13 @@ class GridProviderBuilder {
   build(): GridProvider<any> {
     let params: URLSearchParams = this._params || new PageRequest().buildParams();
     let actionEdit = this._actionEdit || new ActionEdit();
+    let actionView = this._actionView || new ActionView();
     let actionRemove = this._actionRemove || new ActionRemove();
     let actionMultiSelect = this._actionMultiSelect || new ActionMultiSelect();
     let actionSingleSelect = this._actionSingleSelect || new ActionSingleSelect();
     let actionCheckToDelete = this._actionCheckToDelete || new ActionCheckToDelete();
 
-    return new GridProvider(this._service, this._mapper, params, this._headers, this._readOnly, this._hasFilter, actionRemove, actionEdit, actionMultiSelect, actionSingleSelect, actionCheckToDelete);
+    return new GridProvider(this._service, this._mapper, params, this._headers, this._readOnly, this._hasFilter, actionRemove, actionEdit, actionView, actionMultiSelect, actionSingleSelect, actionCheckToDelete);
   }
 }
 
@@ -345,7 +358,12 @@ class ActionEdit extends AbstractAction {
   constructor(hasPermission: boolean = false) {
     super(hasPermission);
   }
+}
 
+class ActionView extends AbstractAction {
+  constructor(hasPermission: boolean = false) {
+    super(hasPermission);
+  }
 }
 
 class ActionCheckToDelete extends AbstractAction {

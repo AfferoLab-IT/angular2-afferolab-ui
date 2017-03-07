@@ -47,6 +47,7 @@ import { GridProvider } from './grid.provider';
                     </td>
                      <td *ngIf="!provider.readOnly">
                         <a *ngIf="provider.actionEdit && provider.actionEdit.canShow()" [routerLink]="[provider.path, item.id]"><i class="material-icons action-button">mode_edit</i></a>
+                        <a *ngIf="provider.actionView && provider.actionView.canShow()" [routerLink]="[provider.path, item.id, 'read-only']"><i class="material-icons action-button">visibility</i></a>
                         <confirm-button *ngIf="provider.actionRemove && provider.actionRemove.canShow()" (onConfirm)="remove($event)"
                                         [title]="modalMessage.title"
                                         [content]="modalMessage.content"

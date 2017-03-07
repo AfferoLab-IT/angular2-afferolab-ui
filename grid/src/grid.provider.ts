@@ -98,8 +98,8 @@ export class GridProvider<MODEL> {
     this._actionEdit = new ActionEdit(hasPermission);
   }
 
-  setActionMultiSelect(hasPermission: boolean = false, selectedItems: Array<any> = []) {
-    this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems);
+  setActionMultiSelect(hasPermission: boolean = false, selectedItems: Array<any> = [], identificator: any = 'id') {
+    this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems, identificator);
   }
 
   setActionSingleSelect(hasPermission: boolean = false, selectedItem: any, callback: any) {
@@ -204,8 +204,8 @@ class GridProviderBuilder {
     return this;
   }
 
-  actionMultiSelect(hasPermission: boolean = false, selectedItems: Array<any> = []): GridProviderBuilder {
-    this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems);
+  actionMultiSelect(hasPermission: boolean = false, selectedItems: Array<any> = [], identificator: any = 'id'): GridProviderBuilder {
+    this._actionMultiSelect = new ActionMultiSelect(hasPermission, selectedItems, identificator);
     return this;
   }
 
@@ -365,10 +365,12 @@ class ActionCheckToDelete extends AbstractAction {
 
 class ActionMultiSelect extends AbstractAction {
   public selectedItems: Array<any> = [];
+  public identificator: any = 'id';
 
-  constructor(hasPermission: boolean = false, selectedItems: Array<any> = []) {
+  constructor(hasPermission: boolean = false, selectedItems: Array<any> = [], identificator: any = 'id') {
     super(hasPermission);
     this.selectedItems = selectedItems;
+    this.identificator = identificator;
   }
 
   public addItem(item: any) {

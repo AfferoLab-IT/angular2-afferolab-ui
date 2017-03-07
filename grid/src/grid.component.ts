@@ -289,8 +289,8 @@ export class GridComponent {
   setCheckedInSelectedItem(item) {
     if (this.provider.actionMultiSelect
         && this.provider.actionMultiSelect.selectedItems.length > 0
-        && _.find(this.provider.actionMultiSelect.selectedItems, function (selectedItem) {
-          return selectedItem.id === item.id;
+        && _.find(this.provider.actionMultiSelect.selectedItems, selectedItem => {
+          return selectedItem[this.provider.actionMultiSelect.identificator] === item.id;
         }) != undefined) {
       item.checked = true;
     }

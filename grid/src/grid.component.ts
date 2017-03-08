@@ -18,7 +18,7 @@ import { GridProvider } from './grid.provider';
                   </a>
               </div>
               <div class="row" *ngIf="provider.hasFilter">
-                <div ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
+                <div *ngIf="!hideStatus" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
                     <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
                 </div>
                 <div ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
@@ -150,6 +150,8 @@ export class GridComponent {
   @Input('buttonSearchStyle') buttonSearchStyle;
 
   @Input('registerStyle') registerStyle;
+
+  @Input('hideStatus') hideStatus;
 
   private list:Array<any> = [];
 

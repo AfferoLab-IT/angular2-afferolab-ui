@@ -274,6 +274,10 @@ export class GridComponent {
     return key.substring(key.indexOf('.') +1, key.length);
   }
 
+  cleanFields() {
+    this.provider.filter.q = '';
+  }
+
   buildSearchFilters() {
     this.cleanFilters();
     if (this.filters) {

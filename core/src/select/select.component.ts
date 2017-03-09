@@ -1,4 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges, AfterContentInit, OnInit } from '@angular/core';
+import {
+  Component, Input, Output, EventEmitter, OnChanges, AfterContentInit, OnInit,
+  AfterViewChecked, ChangeDetectorRef
+} from '@angular/core';
 import { _ } from 'underscore';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 
@@ -11,7 +14,7 @@ import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms'
                 </select>
             </span>`
 })
-export class SelectComponent implements OnChanges, OnInit {
+export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
 
   public id: string = _.uniqueId();
 
@@ -31,7 +34,7 @@ export class SelectComponent implements OnChanges, OnInit {
   onlyActive: boolean;
 
   @Input('disabledSelect')
-  disabledSelect: boolean = false;
+  disabledSelect: boolean;
 
   @Input('showDefaultOption')
   showDefaultOption: boolean;
@@ -51,12 +54,20 @@ export class SelectComponent implements OnChanges, OnInit {
   @Output()
   modelValueChange: EventEmitter<any> = new EventEmitter();
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder,
+              private changeDetectionRef : ChangeDetectorRef) {}
 
   change(newValue) {
     this.modelValue = newValue;
     this.modelValueChange.emit(newValue);
     this.onChange.emit(newValue);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.formGroup && this.formGroup.controls) {
+      this.checkSelectIsDisabled(this.name || '');
+      this.changeDetectionRef.detectChanges();
+    }
   }
 
   ngOnInit() {

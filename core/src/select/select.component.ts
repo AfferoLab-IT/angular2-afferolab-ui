@@ -1,9 +1,7 @@
-import {
-  Component, Input, Output, EventEmitter, OnChanges, AfterContentInit, OnInit,
-  AfterViewChecked, ChangeDetectorRef
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit, AfterViewChecked } from '@angular/core';
 import { _ } from 'underscore';
 import { FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'select-box',
@@ -54,8 +52,7 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
   @Output()
   modelValueChange: EventEmitter<any> = new EventEmitter();
 
-  constructor(private formBuilder: FormBuilder,
-              private changeDetectionRef : ChangeDetectorRef) {}
+  constructor(private formBuilder: FormBuilder) {}
 
   change(newValue) {
     this.modelValue = newValue;
@@ -65,8 +62,9 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     if (this.formGroup && this.formGroup.controls) {
-      this.checkSelectIsDisabled(this.name || '');
-      this.changeDetectionRef.detectChanges();
+      if (isNullOrUndefined(this.name)) {
+        this.checkSelectIsDisabled('');
+      }
     }
   }
 

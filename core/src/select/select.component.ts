@@ -61,9 +61,11 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (this.formGroup && this.formGroup.controls) {
+    if (this.formGroup.enabled) {
       if (isNullOrUndefined(this.name)) {
         this.checkSelectIsDisabled('');
+      } else {
+        this.checkSelectIsDisabled(this.name);
       }
     }
   }

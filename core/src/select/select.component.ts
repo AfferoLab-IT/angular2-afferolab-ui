@@ -90,10 +90,12 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
   }
 
   checkSelectIsDisabled(controlName) {
-    if (this.disabledSelect) {
-      this.formGroup.controls[controlName].disable();
-    } else {
-      this.formGroup.controls[controlName].enable();
+    if (!isNullOrUndefined(this.formGroup.controls[controlName])) {
+      if (this.disabledSelect) {
+        this.formGroup.controls[controlName].disable();
+      } else {
+        this.formGroup.controls[controlName].enable();
+      }
     }
   }
 

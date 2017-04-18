@@ -56,8 +56,8 @@ import { GridProvider } from './grid.provider';
                             <i class="material-icons action-button">delete</i>
                         </confirm-button>
                         <span *ngIf="provider.actionMultiSelect && provider.actionMultiSelect.canShow()" >
-                          <input id="multi_select_{{item.id}}" type="checkbox" [(ngModel)]="item.checked" (change)="updateList($event, item)">
-                          <label htmlFor="multi_select_{{item.id}}"></label>
+                          <input id="multi_select_{{getUnique(item)}}" type="checkbox" [(ngModel)]="item.checked" (change)="updateList($event, item)">
+                          <label htmlFor="multi_select_{{getUnique(item)}}"></label>
                         </span>
                         <span *ngIf="provider.actionSingleSelect && provider.actionSingleSelect.canShow()" >
                           <a class="btn-sm btn-floating button-confirm-color" (click)="updateItem(item)">
@@ -157,9 +157,15 @@ export class GridComponent {
 
   private loaded:boolean = false;
 
+  private uniqueId: any;
+
   constructor(private ref: ChangeDetectorRef) {
     this.modalMessage.title = 'Remoção';
     this.modalMessage.content = 'Deseja realizar a remoção desse registro?'
+  }
+
+  ngOnInit(): void {
+    this.uniqueId = _.uniqueId();
   }
 
   get items() {

@@ -168,6 +168,10 @@ export class GridComponent {
     this.uniqueId = _.uniqueId();
   }
 
+  private getUnique(item): string {
+    return item.id + this.uniqueId;
+  }
+
   get items() {
     /*@todo criar classe para Lazy load que carregue apenas uma vez o conteudo.*/
     if (!this.loaded && (this.loadOnStart == undefined || this.loadOnStart)) {

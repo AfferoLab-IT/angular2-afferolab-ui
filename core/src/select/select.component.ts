@@ -67,7 +67,6 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
       } else {
         this.checkSelectIsDisabled(this.name);
       }
-      this.setValidators();
     }
   }
 
@@ -103,16 +102,13 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
   setValidators() {
     if (this.required) {
       this.formGroup.controls[this.name].setValidators(Validators.required);
-    } else if (!isNullOrUndefined(this.formGroup.controls[this.name])) {
-      this.formGroup.controls[this.name].setErrors(null);
     }
   }
 
   ngOnChanges(changes: any): void {
 
     setTimeout(() => {
-
-      if (this.modelValue) {
+      if (!isNullOrUndefined(this.modelValue)) {
         $('#' + this.id).val(this.modelValue);
       } else {
         if (this.onlyActive) {

@@ -11,8 +11,8 @@ import { isNullOrUndefined } from 'util';
                     <ng-content></ng-content>
                 </div>
                 <div class="modal-footer">
+                    <a *ngIf="showConfirmButton()" (click)= "confirm()" ngClass="{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}" class="modal-action modal-close waves-effect  btn-flat">{{ confirmLabel }} </a>
                     <a *ngIf="showDenyButton()" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</a>
-                    <a *ngIf="showConfirmButton()" (click)= "confirm()" [ngClass]="ngClass()" class=" modal-action waves-effect waves-green btn-flat">{{ confirmLabel }} </a>
                 </div>
               </div>`,
   styleUrls: ['./css/modal.css']
@@ -50,11 +50,11 @@ export class ModalComponent {
   onDeny: EventEmitter<any> = new EventEmitter<any>();
 
   confirm(): void {
-      this.onConfirm.emit(this.data);
+    this.onConfirm.emit(this.data);
   }
 
   deny(): void {
-      this.onDeny.emit(this.data);
+    this.onDeny.emit(this.data);
   }
 
   showDenyButton(): boolean {
@@ -67,19 +67,5 @@ export class ModalComponent {
 
   modalClose(): string {
     return this.modalClose ? 'modal-close' : '';
-  }
-
-  ngClass(): string {
-    let returnClass = '';
-
-    if (this.disableConfirm) {
-      returnClass += 'disable-confirm';
-    }
-
-    if (this.modalClose) {
-      returnClass +='modal-close';
-    }
-
-    return returnClass;
   }
 }

@@ -27,16 +27,6 @@ var ModalComponent = (function () {
     ModalComponent.prototype.modalClose = function () {
         return this.modalClose ? 'modal-close' : '';
     };
-    ModalComponent.prototype.ngClass = function () {
-        var returnClass = '';
-        if (this.disableConfirm) {
-            returnClass += 'disable-confirm';
-        }
-        if (this.modalClose) {
-            returnClass += 'modal-close';
-        }
-        return returnClass;
-    };
     __decorate([
         core_1.Input('id')
     ], ModalComponent.prototype, "id");
@@ -70,7 +60,7 @@ var ModalComponent = (function () {
     ModalComponent = __decorate([
         core_1.Component({
             selector: 'modal',
-            template: "\n              <div id=\"{{ id }}\" ngClass=\"{{ class }}\" class=\"modal modal-fixed-footer\">\n                <div class=\"modal-content left-align\">\n                    <h4>{{ title || 'Modal' }}</h4>\n                    <ng-content></ng-content>\n                </div>\n                <div class=\"modal-footer\">\n                    <a *ngIf=\"showDenyButton()\" (click)= \"deny()\" class=\" modal-action modal-close waves-effect waves-red btn-flat\">{{ denyLabel }}</a>\n                    <a *ngIf=\"showConfirmButton()\" (click)= \"confirm()\" [ngClass]=\"ngClass()\" class=\" modal-action waves-effect waves-green btn-flat\">{{ confirmLabel }} </a>\n                </div>\n              </div>",
+            template: "\n              <div id=\"{{ id }}\" ngClass=\"{{ class }}\" class=\"modal modal-fixed-footer\">\n                <div class=\"modal-content left-align\">\n                    <h4>{{ title || 'Modal' }}</h4>\n                    <ng-content></ng-content>\n                </div>\n                <div class=\"modal-footer\">\n                    <a *ngIf=\"showConfirmButton()\" (click)= \"confirm()\" ngClass=\"{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}\" class=\"modal-action modal-close waves-effect  btn-flat\">{{ confirmLabel }} </a>\n                    <a *ngIf=\"showDenyButton()\" (click)= \"deny()\" class=\" modal-action modal-close waves-effect waves-red btn-flat\">{{ denyLabel }}</a>\n                </div>\n              </div>",
             styleUrls: ['./css/modal.css']
         })
     ], ModalComponent);

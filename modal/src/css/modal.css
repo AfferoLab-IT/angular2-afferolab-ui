@@ -3,3 +3,9 @@
     cursor: not-allowed;
     color: gray;
 }
+
+.modal-large {
+    max-height: 100%;
+    height: 80%;
+    width: 78%;
+}

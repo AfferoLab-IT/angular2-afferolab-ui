@@ -108,7 +108,7 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
   ngOnChanges(changes: any): void {
 
     setTimeout(() => {
-      if (!isNullOrUndefined(this.modelValue)) {
+      if (!isNullOrUndefined(this.modelValue) && this.modelValue !== '') {
         $('#' + this.id).val(this.modelValue);
       } else {
         if (this.onlyActive) {

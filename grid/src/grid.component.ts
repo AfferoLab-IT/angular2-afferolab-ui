@@ -18,9 +18,11 @@ import { GridProvider } from './grid.provider';
                   </a>
               </div>
               <div class="row" *ngIf="provider.hasFilter">
-                <div *ngIf="!hideStatus" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}">
+                <div *ngIf="!hideStatus" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}" style="margin-top: 3px;">
+                    <label>Status</label>                   
                     <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
                 </div>
+                <br>
                 <div ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
                   <input class="" placeholder="Pesquisar..." aria-controls="example" type="search" [(ngModel)]="provider.filter.q">
                 </div>

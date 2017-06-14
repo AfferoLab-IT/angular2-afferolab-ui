@@ -2,6 +2,7 @@ import { _ } from 'underscore';
 import { Input, Output, Component, ChangeDetectorRef, HostListener, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { GridProvider } from './grid.provider';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'grid',
@@ -155,6 +156,8 @@ export class GridComponent {
 
   @Input('hideStatus') hideStatus;
 
+  @Input('selectedStatus') selectedStatus;
+
   private list:Array<any> = [];
 
   private loaded:boolean = false;
@@ -168,6 +171,10 @@ export class GridComponent {
 
   ngOnInit(): void {
     this.uniqueId = _.uniqueId();
+
+    if (!isNullOrUndefined(this.selectedStatus)) {
+      this.provider._filter.status = this.selectedStatus;
+    }
   }
 
   private getUnique(item): string {

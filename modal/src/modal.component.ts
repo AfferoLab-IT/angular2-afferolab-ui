@@ -11,8 +11,8 @@ import { isNullOrUndefined } from 'util';
                     <ng-content></ng-content>
                 </div>
                 <div class="modal-footer">
-                    <a *ngIf="showConfirmButton()" (click)= "confirm()" ngClass="{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}" class="modal-action modal-close waves-effect  btn-flat">{{ confirmLabel }} </a>
-                    <a *ngIf="showDenyButton()" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</a>
+                    <button *ngIf="showConfirmButton()" (click)= "confirm()" [disabled]="disableConfirm" ngClass="{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}" class="modal-action waves-effect btn-flat">{{ confirmLabel }} </button>
+                    <button *ngIf="showDenyButton()" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</button>
                 </div>
               </div>`,
   styleUrls: ['./css/modal.css']
@@ -30,6 +30,9 @@ export class ModalComponent {
 
   @Input('title')
   title: string;
+
+  @Input('noCloseOnConfirm')
+  noCloseOnConfirm: boolean;
 
   @Input('confirmLabel')
   confirmLabel: string;
@@ -50,6 +53,9 @@ export class ModalComponent {
   onDeny: EventEmitter<any> = new EventEmitter<any>();
 
   confirm(): void {
+    if (isNullOrUndefined(this.noCloseOnConfirm) || !this.noCloseOnConfirm) {
+      $('#'+this.id).closeModal();
+    }
     this.onConfirm.emit(this.data);
   }
 

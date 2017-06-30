@@ -5,9 +5,9 @@ import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'select-box',
-  template: `<span [formGroup]="formGroup">
-                <select id="{{ id }}" [formControlName]="getName()" name="{{name}}" class="browser-default" [(ngModel)]="modelValue" (ngModelChange)="change($event)">
-                    <option *ngIf="!onlyActive" [value]="''">Selecione</option>
+  template: `<span [formGroup]="formGroup">              
+                <select id="{{ id }}" [formControlName]="getName()" name="{{name}}" class="browser-default" [(ngModel)]="modelValue" (ngModelChange)="change($event)">                   
+                    <option *ngIf="!onlyActive && hasSelectOption" [value]="''">Selecione</option>
                     <option *ngFor="let option of options" [value]="option[key]">{{ option[optionValue.toString()] }}</option>
                 </select>
             </span>`
@@ -45,6 +45,9 @@ export class SelectComponent implements OnChanges, OnInit, AfterViewChecked {
 
   @Input('required')
   required: boolean = false;
+
+  @Input('hasSelectOption')
+  hasSelectOption: boolean = true;
 
   @Output('onChange')
   onChange: EventEmitter<any> = new EventEmitter<any>();

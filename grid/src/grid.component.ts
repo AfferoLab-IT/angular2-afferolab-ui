@@ -20,8 +20,8 @@ import { isNullOrUndefined } from 'util';
               </div>
               <div class="row" *ngIf="provider.hasFilter">
                 <div *ngIf="!hideStatus" ngClass="{{statusClass ? statusClass : 'col s12 m12 l2'}}" style="margin-top: 3px;">
-                    <label>Status</label>                   
-                    <select-box [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
+                    <label>Status</label>                                      
+                    <select-box [hasSelectOption]="false" [onlyActive]="onlyActive" [options]="onlyActive ? activeStatus : status" [key]="'value'" [optionValue]="'name'" [(modelValue)]="provider.filter.status" ></select-box>
                 </div>
                 <br>
                 <div ngClass="{{inputSearchClass ? inputSearchClass : 'col s12 m12 l5'}}">
@@ -124,6 +124,7 @@ export class GridComponent {
   public message: string;
 
   public status = [
+    {name: 'Todos', value: ''},
     {name: 'Ativo', value: true},
     {name: 'Inativo', value: false}
   ];

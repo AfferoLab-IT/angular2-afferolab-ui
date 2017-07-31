@@ -31,4 +31,17 @@ export class TooltipComponent implements AfterViewInit {
       position: this.position
     });
   }
+
+  refreshTooltip(id: any) {
+    let self = this;
+
+    $('#' + id).tooltip('remove');
+
+    setTimeout(() => {
+      $('#' + id).tooltip({
+        delay: self.delay,
+        tooltip: self.text,
+        position: self.position
+      })}, 0);
+  }
 }

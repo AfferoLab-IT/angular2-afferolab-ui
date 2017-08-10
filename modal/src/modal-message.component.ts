@@ -10,7 +10,7 @@ import { _ } from 'underscore';
               <div id="{{ id }}" class="modal">
                 <div class="modal-content left-align">
                     <h4>{{ title || 'Alerta' }}</h4>
-                    <p>{{ content || 'Deseja confirmar essa ação?' }}</p>
+                    <p [ngClass]="removeContentPadding ? 'no-padding' : ''">{{ content || 'Deseja confirmar essa ação?' }}</p>
                 </div>
                 <div class="modal-footer" >
                     <a *ngIf="showConfirm" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel || 'Não' }}</a>
@@ -34,6 +34,9 @@ export class ModalMessageComponent {
 
   @Input('content')
   content: string;
+
+  @Input('removeContentPadding')
+  removeContentPadding: boolean;
 
   @Input('confirmLabel')
   confirmLabel: string;

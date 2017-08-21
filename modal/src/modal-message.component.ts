@@ -65,6 +65,7 @@ export class ModalMessageComponent {
     } else {
       this.onConfirm.emit();
     }
+    this.closeModal(this.id);
   }
 
   deny(): void {
@@ -73,6 +74,7 @@ export class ModalMessageComponent {
     } else {
       this.onDeny.emit();
     }
+    this.closeModal(this.id);
   }
 
   openModal(): void {

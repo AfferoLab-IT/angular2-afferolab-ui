@@ -12,7 +12,7 @@ import { isNullOrUndefined } from 'util';
                 </div>
                 <div class="modal-footer">
                     <button *ngIf="showConfirmButton()" (click)= "confirm()" [disabled]="disableConfirm" ngClass="{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}" class="modal-action waves-effect btn-flat">{{ confirmLabel }} </button>
-                    <button *ngIf="showDenyButton()" (click)= "deny()" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</button>
+                    <button style="margin-right: 5px;" *ngIf="showDenyButton()" [disabled]="hasDisableDenyButton()" (click)= "deny()" ngClass="{{ disableDenyButton ? 'btn-flat-disabled' : 'waves-red' }}" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</button>
                 </div>
               </div>`,
   styleUrls: ['./css/modal.css']
@@ -33,6 +33,9 @@ export class ModalComponent {
 
   @Input('noCloseOnConfirm')
   noCloseOnConfirm: boolean;
+
+  @Input('disableDenyButton')
+  disableDenyButton: boolean = false;
 
   @Input('confirmLabel')
   confirmLabel: string;
@@ -73,5 +76,9 @@ export class ModalComponent {
 
   modalClose(): string {
     return this.modalClose ? 'modal-close' : '';
+  }
+
+  hasDisableDenyButton() {
+    return this.disableDenyButton;
   }
 }

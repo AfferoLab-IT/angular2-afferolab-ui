@@ -10,9 +10,12 @@ import { isNullOrUndefined } from 'util';
                     <h4>{{ title || 'Modal' }}</h4>
                     <ng-content></ng-content>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" >
+                    <div style="margin-left: 5px;" class="left-align col s4 m4 l2">
+                        <button style="margin-right: 5px;" *ngIf="showDenyButton()" [disabled]="hasDisableDenyButton()" (click)= "deny()" ngClass="{{ disableDenyButton ? 'btn-flat-disabled' : 'waves-red' }}" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</button>
+                    </div>
+                    <ng-content select="[footer]"></ng-content>
                     <button *ngIf="showConfirmButton()" (click)= "confirm()" [disabled]="disableConfirm" ngClass="{{ disableConfirm ? 'btn-flat-disabled' : 'waves-green' }}" class="modal-action waves-effect btn-flat">{{ confirmLabel }} </button>
-                    <button style="margin-right: 5px;" *ngIf="showDenyButton()" [disabled]="hasDisableDenyButton()" (click)= "deny()" ngClass="{{ disableDenyButton ? 'btn-flat-disabled' : 'waves-red' }}" class=" modal-action modal-close waves-effect waves-red btn-flat">{{ denyLabel }}</button>
                 </div>
               </div>`,
   styleUrls: ['./css/modal.css']

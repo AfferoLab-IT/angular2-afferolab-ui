@@ -10,6 +10,13 @@
     width: 78%;
 }
 
+.modal-overlay {
+    top: 0% !important;
+    max-height: 100%;
+    height: 100%;
+    width: 100%;
+}
+
 .modal-small {
     max-height: 100%;
     height: 50%;

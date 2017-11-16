@@ -89,8 +89,8 @@ import { isNullOrUndefined } from 'util';
                   </div>
                 </div>
                 <div class="row">
-                  <div class="dataTables_info left-align col s12 m12 l8" style="margin-top: 10px" id="example_info" role="status" aria-live="polite">Mostrando 1 até {{ provider.pagination.totalElements }} de {{ provider.pagination.totalRegisters }} registros</div>
-                  <div class="dataTables_paginate paging_simple_numbers right-align col s12 m12 l4" id="example_paginate">
+                  <div class="dataTables_info left-align col s12 m12 l5" style="margin-top: 10px" id="example_info" role="status" aria-live="polite">Mostrando 1 até {{ provider.pagination.totalElements }} de {{ provider.pagination.totalRegisters }} registros</div>
+                  <div class="dataTables_paginate paging_simple_numbers right-align col s12 m12 l7" id="example_paginate">
                     <button *ngIf="provider.pagination.canShowPrevious(provider.pagination.currentPage)" class="paginate_button" aria-controls="example" tabindex="0" id="example_previous" (click)="getPage(provider.pagination.previousPage())">
                         <i class="material-icons">chevron_left</i>
                     </button>
